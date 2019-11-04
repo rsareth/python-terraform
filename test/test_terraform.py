@@ -455,3 +455,29 @@ class TestTerraform(object):
         logs = logs.replace('\n', '')
         expected_log = 'command: terraform workspace delete -force test {}'.format(current_path)
         assert expected_log in logs
+
+    def test_list_workspaces(self, workspace_setup_teardown):
+        workspace_name = 'test'
+        with workspace_setup_teardown(workspace_name) as tf:
+            ret, out, err = tf.list_workspaces()
+
+        assert ret == 0
+        assert err == ''
+
+        logs = string_logger()
+        logs = logs.replace('\n', '')
+        expected_log = 'command: terraform workspace list'
+        assert expected_log in logs
+
+    def test_list_workspaces_with_no_color(self, workspace_setup_teardown):
+        workspace_name = 'test'
+        with workspace_setup_teardown(workspace_name) as tf:
+            ret, out, err = tf.list_workspaces(no_color=IsFlagged)
+
+        assert ret == 0
+        assert err == ''
+
+        logs = string_logger()
+        logs = logs.replace('\n', '')
+        expected_log = 'command: terraform workspace list -no-color'
+        assert expected_log in logs
